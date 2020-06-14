@@ -1,0 +1,27 @@
+#####
+### Here we're explicitly ignoring all "supporting files" which are written by the client.
+#####
+pom.xml
+**/.openapi-generator/**
+# Ignoring files can be done using glob patterns just like in .gitignore
+*.gradle
+# .openapi-generator-ignore won't be overwritten if it already exists.
+**/.openapi-generator-ignore
+# Specifying existing directories such as "docs" means the generator won't output anything to that directory
+docs/
+
+# Existing files can be excluded. If they're a part of generated output, they won't be touched.
+README.md
+
+# You can also specify files you're unsure of.
+petstore.yaml
+
+## Ignoring files in html dir
+html/**
+!**/index.html
+
+### Another pattern you may follow is to ignore everything by default an explicitly include only those packages/files you're interested in.
+### For example:
+#*
+#**
+#!src/main/kotlin/us/jimschubert/client/**

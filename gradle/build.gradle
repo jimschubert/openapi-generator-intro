@@ -1,0 +1,96 @@
+group 'us.jimschubert'
+version '1.0.0'
+
+wrapper {
+    gradleVersion = '5.3'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+buildscript {
+    ext.kotlin_version = '1.3.61'
+    ext.openapi_generator_version = '4.3.1'
+
+    repositories {
+        maven { url "https://repo1.maven.org/maven2" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.openapitools:openapi-generator-gradle-plugin:$openapi_generator_version"
+    }
+}
+
+apply plugin: 'org.openapi.generator'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+repositories {
+    maven { url "https://repo1.maven.org/maven2" }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "com.google.code.gson:gson:2.8.6"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "com.squareup.okhttp3:okhttp:4.2.2"
+    testCompile "io.kotlintest:kotlintest-runner-junit5:3.1.0"
+}
+
+application {
+    mainClassName = 'us.jimschubert.example.Entry'
+}
+
+compileKotlin {
+    kotlinOptions {
+        suppressWarnings = true
+        apiVersion = "1.3"
+        languageVersion = "1.3"
+        jvmTarget = "1.8"
+    }
+}
+
+openApiValidate {
+    inputSpec = "$rootDir/petstore.yaml".toString()
+    recommend = true
+}
+
+openApiGenerate {
+    generatorName = "kotlin"
+    inputSpec = "$rootDir/petstore.yaml".toString()
+    outputDir = "$rootDir".toString()
+    apiPackage = "us.jimschubert.client.api"
+    modelPackage = "us.jimschubert.client.model"
+    configOptions = [
+            dateLibrary: "java8",
+            serializableModel: "true",
+            serializationLibrary: "gson",
+            java8: "true",
+            useTags: "true",
+            packageName: "us.jimschubert.client"
+    ]
+    skipValidateSpec = true
+    logToStderr = true
+    generateAliasAsModel = false
+    // set to true and set environment variable {LANG}_POST_PROCESS_FILE
+    // (e.g. KOTLIN_POST_PROCESS_FILE) to the linter/formatter to be processed.
+    // This command will be passed one file at a time for most supported post processors.
+    enablePostProcessFile = false
+}
+
+compileKotlin.dependsOn tasks.openApiGenerate
+
+// example custom task, necessary for generating to multiple outputs
+task buildDocs(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+    generatorName = "html2"
+    inputSpec = "$rootDir/petstore.yaml".toString()
+    additionalProperties = [
+            infoEmail: "james.schubert@gmail.com",
+            infoUrl: "https://github.com/jimschubert/openapi-generator-intro"
+    ]
+    outputDir = "$rootDir/html".toString()
+    ignoreFileOverride = "$rootDir/.openapi-generator-ignore".toString()
+}
