@@ -1,0 +1,3 @@
+[submodule "sbt"]
+	path = sbt
+	url = git@github.com:OpenAPITools/sbt-openapi-generator.git
