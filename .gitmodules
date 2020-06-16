@@ -1,3 +1,6 @@
 [submodule "sbt"]
 	path = sbt
 	url = git@github.com:OpenAPITools/sbt-openapi-generator.git
+[submodule "custom-generator"]
+	path = custom-generator
+	url = git@github.com:jimschubert/custom-generator-example.git
